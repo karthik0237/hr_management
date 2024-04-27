@@ -15,7 +15,7 @@ class BaseModel(models.Model):
 class Department(BaseModel):
 
     name = models.CharField(max_length=32, null=False, unique=True,db_index = True)
-  # department_head = models.IntegerField()
+  # department_head = models.IntegerField(default = null)
 
 
 class User(AbstractUser):
@@ -39,7 +39,43 @@ class FamilyMembers(BaseModel):
     user_id = models.ForeignKey(User, on_delete=models.PROTECT, db_index=True)
     name = models.CharField(max_length=32, null=False)
     relationship = models.CharField(max_length=32, default = None)
-    mobile = models.CharField
+    mobile = models.CharField(max_length=12, null = False)
+    email = models.EmailField(default = None)
+    dob = models.DateTimeField(default = None)
+    is_emergency_contact = models.BooleanField(default = True)
+
+
+class EducationalQualifications(BaseModel):
+    user_id = models.ForeignKey(User, on_delete=models.PROTECT,db_index=True)
+    start_date = models.DateField(null = False)
+    end_date = models.DateField(default = None)
+    institute_name = models.CharField(max_length = 128, default=None)
+    percentage = models.FloatField(null = False)
+    course = models.CharField(max_length=64, null = False)
+    level = models.CharField(default = None)
+
+
+class UserExperience(BaseModel):
+    user_id = models.ForeignKey(User, on_delete= models.PROTECT, db_index = True)
+    title = models.CharField(max_length=64, null = False)
+    place_of_work = models.CharField(max_length=50, null = False)
+    start_datetime = models.DateField(default= None, db_index=True)
+    end_datetime = models.DateField(null=False, db_index=True)
+    skills = models.CharField(max_length=512, default= None)
+    achievements = models.CharField(max_length= 512, default = None)
+
+
+class Country(BaseModel):
+    name = models.CharField(unique=True, null = False)
+
+
+
+
+
+    
+
+
+
 
 
     
