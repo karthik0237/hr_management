@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser 
+from django.contrib.auth.models import AbstractUser,Group
 
 # Create your models here.
 class BaseModel(models.Model):
@@ -66,7 +66,36 @@ class UserExperience(BaseModel):
 
 
 class Country(BaseModel):
-    name = models.CharField(unique=True, null = False)
+    name = models.CharField(unique=True, null = False, db_index=True)
+
+
+class State(BaseModel):
+    name = models.CharField(max_length=32, null = False)
+    country_id =  models.IntegerField(default=None)
+
+
+class City(BaseModel):
+    name = models.CharField(max_length=32, null = False)
+    country_id = models.ForeignKey(Country, on_delete=models.PROTECT)
+    state_id = models.ForeignKey(State, on_delete = models.PROTECT)
+    latitude = models.CharField(null=True)
+    longitude = models.CharField(null=True)
+
+
+
+class UserGroup(BaseModel):
+    name = models.CharField(max_length=32, unique=True,db_index=True)
+
+    def save(self,*args,**kwargs):
+        '''
+        get or create group with name
+        '''
+        group, created = Group.objects.get_or_create(name = self.name)
+        return super().save(*args,**kwargs)
+    
+
+
+
 
 
 
