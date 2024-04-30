@@ -25,7 +25,7 @@ class Country(BaseModel):
 
 class State(BaseModel):
     name = models.CharField(max_length=32, null = False)
-    country =  models.CharField(Country,on_delete=models.PROTECT, null=False)
+    country =  models.ForeignKey(Country,on_delete=models.PROTECT)
 
 
 class City(BaseModel):
@@ -94,7 +94,7 @@ class EducationDetails(BaseModel):
 
     user = models.ForeignKey(User, on_delete=models.PROTECT,db_index=True)
     start_date = models.DateField(null = False)
-    end_date = models.DateField(default = None)
+    end_date = models.DateField(null=True)
     institute_name = models.CharField(max_length = 128, default=None)
     percentage = models.FloatField(null = False)
     course = models.CharField(max_length=64, null = False)
