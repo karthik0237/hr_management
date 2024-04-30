@@ -90,7 +90,7 @@ class FamilyMembers(BaseModel):
     is_emergency_contact = models.BooleanField(default = True)
 
 
-class EducationQualifications(BaseModel):
+class EducationDetails(BaseModel):
 
     user = models.ForeignKey(User, on_delete=models.PROTECT,db_index=True)
     start_date = models.DateField(null = False)
