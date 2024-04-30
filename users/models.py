@@ -102,7 +102,9 @@ class EducationDetails(BaseModel):
 
 
 class UserExperience(BaseModel):
-    
+    '''
+    model for user experience
+    '''
     user = models.ForeignKey(User, on_delete= models.PROTECT, db_index = True)
     title = models.CharField(max_length=64, null = False)
     place_of_work = models.CharField(max_length=50, null = False)
