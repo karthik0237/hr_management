@@ -11,6 +11,8 @@ class BaseSerializer(ModelSerializer):
         fields = ['id','created_at','updated_at','is_active']
         fields_read_only = ['id','created_at','updated_at']
 
+
+
 class DepartmentSerializer(BaseSerializer):
     
     class Meta:
