@@ -1,22 +1,25 @@
 import uuid
+from enum import Enum
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser,Group
 
 
-from enum import Enum
+
 
 
 
 class DesignationChoice(Enum):
 
+    INTERN = 'Intern'
     JUNIOR = 'Junior'
     SENIOR = 'Senior'
-    Middle = 'Middle'
+    LEAD = 'Lead'
+    EXECUTIVE = 'Executive'
 
     @classmethod
     def choices(cls):
-        return tuple(i.value for i in cls)
+        return tuple((i.name, i.value) for i in cls)
     
 
 class GenderChoice(Enum):
@@ -27,7 +30,7 @@ class GenderChoice(Enum):
 
     @classmethod
     def choices(cls):
-        return tuple(i.value for i in cls)
+        return tuple((i.name, i.value) for i in cls)
     
 class MaritalStatusChoice(Enum):
 
@@ -37,7 +40,7 @@ class MaritalStatusChoice(Enum):
 
     @classmethod
     def choices(cls):
-        return tuple(i.value for i in cls)
+        return tuple((i.name, i.value) for i in cls) # an iterable containing (human readable names, actual values) tuples 
     
 
 class BloodGroupChoice(Enum):
@@ -55,7 +58,7 @@ class BloodGroupChoice(Enum):
     # class method, accessed using class instance cls
     @classmethod
     def choices(cls):
-        return tuple(i.value for i in cls)
+        return tuple((i.name, i.value) for i in cls)
     
     
     
@@ -64,7 +67,7 @@ class BloodGroupChoice(Enum):
 
 
 # Create your models here.
-class BaseModel(models.Model):
+class BaseUserModel(models.Model):
 
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
@@ -74,7 +77,7 @@ class BaseModel(models.Model):
         abstract = True
 
 
-class Department(BaseModel):
+class Department(BaseUserModel):
 
     id  = models.UUIDField(primary_key = True, editable = False, default =  uuid.uuid4())    
     name = models.CharField(max_length = 32, null = False, unique = True,db_index = True)
@@ -82,26 +85,29 @@ class Department(BaseModel):
 
 
 
-class Country(BaseModel):
+class Country(BaseUserModel):
 
-    id  = models.UUIDField(primary_key = True, editable = False, default =  uuid.uuid4())
-    name = models.CharField(unique = True, null = False, db_index = True)
+    name = models.CharField(max_length = 32, unique = True, null = False, db_index = True)
+    name_uc = models.CharField(max_length = 32, unique = True, null = False )
 
 
-class State(BaseModel):
+class State(BaseUserModel):
+
     id  = models.UUIDField(primary_key = True, editable = False, default =  uuid.uuid4())
     name = models.CharField(max_length = 32, null = False)
+    name_uc = models.CharField(max_length = 32, null = False )
     country =  models.ForeignKey(Country,on_delete = models.PROTECT)
 
 
-class City(BaseModel):
+class City(BaseUserModel):
 
     id  = models.UUIDField(primary_key = True, editable = False, default =  uuid.uuid4())
     name = models.CharField(max_length = 32, null = False)
+    name_uc = models.CharField(max_length = 32, null = False )
     state = models.ForeignKey(State, on_delete = models.PROTECT)
     country = models.ForeignKey(Country, on_delete = models.PROTECT)
-    latitude = models.CharField(null = True)
-    longitude = models.CharField(null = True)
+    latitude = models.CharField(max_length = 32, null = True)
+    longitude = models.CharField(max_length = 32, null = True)
 
 
 class User(AbstractUser):
@@ -110,12 +116,14 @@ class User(AbstractUser):
     # username
     # password
     designation = models.CharField(choices =  DesignationChoice.choices, max_length = 32, db_index = True)
-    employee_id = models.CharField(null = False,unique = True,db_index = True)
+    employee_id = models.CharField(max_length = 16, null = False,unique = True,db_index = True)
     department = models.ForeignKey(Department,on_delete = models.PROTECT)
     # date_joined
     picture = models.ImageField(upload_to = "profile", null = True)
-    mobile = models.IntegerField(max_length = 16, null = False,unique = True)
-    email = models.EmailField(unique = True,null = False,db_index = True)
+    # mobile no validation required
+    mobile = models.CharField(max_length = 16, null = False, unique = True)
+    # email validation required
+    email = models.EmailField(unique = True, null = False, db_index = True)
     dob = models.DateField(null = True)
 
     door_no = models.CharField(max_length = 32)
@@ -123,7 +131,7 @@ class User(AbstractUser):
     locality = models.CharField(max_length = 32)
     city = models.ForeignKey(City, on_delete = models.PROTECT)
 
-    gender = models.CharField(choices = GenderChoice.choices, null = False)
+    gender = models.CharField(choices = GenderChoice.choices, max_length = 12, null = False)
     reporting_to = models.ForeignKey('self',on_delete = models.PROTECT)
     passport_no = models.CharField(max_length = 16, null = True, unique = True)
     nationality = models.CharField(max_length = 32,null = True)
@@ -131,7 +139,7 @@ class User(AbstractUser):
     marital_status = models.CharField(choices =  MaritalStatusChoice.choices, max_length = 16, null = True)
     no_of_children = models.IntegerField(null = True)
     # groups
-    blood_group = models.CharField(choices = BloodGroupChoice.choices,max_length = 12, null = True)
+    blood_group = models.CharField(choices = BloodGroupChoice.choices, max_length = 12, null = True)
     social_id_no = models.CharField(max_length = 16,unique = True,null = True)
 
 
@@ -139,7 +147,7 @@ class User(AbstractUser):
 
 
 
-class UserBankdetails(BaseModel):
+class UserBankdetails(BaseUserModel):
     
     id  = models.UUIDField(primary_key = True, editable = False, default =  uuid.uuid4())
     user = models.ForeignKey(User, on_delete = models.PROTECT, null  = False, db_index = True)
@@ -151,7 +159,7 @@ class UserBankdetails(BaseModel):
 
 
 
-class FamilyMembers(BaseModel):
+class FamilyMembers(BaseUserModel):
 
     id  = models.UUIDField(primary_key = True, editable = False, default =  uuid.uuid4())
     user = models.ForeignKey(User, on_delete = models.PROTECT, db_index = True)
@@ -163,7 +171,7 @@ class FamilyMembers(BaseModel):
     is_emergency_contact = models.BooleanField(default = True)
 
 
-class EducationDetails(BaseModel):
+class EducationDetails(BaseUserModel):
 
     id  = models.UUIDField(primary_key = True, editable = False, default =  uuid.uuid4())
     user = models.ForeignKey(User, on_delete = models.PROTECT,db_index = True)
@@ -172,10 +180,10 @@ class EducationDetails(BaseModel):
     institute_name = models.CharField(max_length = 128, default = None)
     percentage = models.FloatField(null = False)
     course = models.CharField(max_length = 64, null = False)
-    level = models.CharField(null = True, default = None)
+    level = models.CharField(max_length = 32, null = True, default = None)
 
 
-class UserExperience(BaseModel):
+class UserExperience(BaseUserModel):
     '''
     model for user experience
     '''
@@ -191,9 +199,8 @@ class UserExperience(BaseModel):
 
 
 
-class UserGroup(BaseModel):
+class UserGroup(BaseUserModel):
 
-    id  = models.UUIDField(primary_key = True, editable = False, default =  uuid.uuid4())
     name = models.CharField(max_length = 32, unique = True,db_index = True)
 
 
