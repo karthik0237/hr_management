@@ -30,10 +30,16 @@ class CountrySerializer(BaseUserSerializer):
 
     def validate(self, attrs):
 
+        is_updated = bool(self.instance)
+
+
+
+
         if attrs.get('name', None):
             name = attrs.get('name')
             attrs['name_uc'] = str(name).upper()
         return super().validate(attrs)
+
 
 
 class StateSerializer(BaseUserSerializer):
@@ -51,8 +57,6 @@ class StateSerializer(BaseUserSerializer):
         return super().validate(attrs)
 
     
-
-
 
 class CitySerializer(BaseUserSerializer):
     
@@ -92,7 +96,7 @@ class FamilyMembersSerializer(BaseUserSerializer):
 
 
 
-class EduactionDetailsSerializer(BaseUserSerializer):
+class EducationDetailsSerializer(BaseUserSerializer):
     
     class Meta:
         model = models.EducationDetails
