@@ -92,6 +92,20 @@ class UserGroupViewset(ListModelMixin, CreateModelMixin, UpdateModelMixin, Retri
 
 
 
+router = DefaultRouter()
+
+router.register('users', UserViewset, basename = 'user')
+router.register('usergroups', UserGroupViewset, basename = 'usergroup')
+router.register('countries', CountryViewset, basename = 'country')
+router.register('states', StateViewset, basename = 'state')
+router.register('cities', CityViewset, basename = 'city')
+router.register('userexperience', UserExperienceViewset, basename = 'userexperience')
+router.register('userbankdetails', UserBankdetailsViewset, basename = 'userbankdetails')
+router.register('familymembers', FamilyMembersViewset, basename = 'familymember')
+router.register('eduacationdetails', EducationDetailsViewset, basename = 'educationdetails')
+router.register('departments', DepartmentViewset, basename = 'department')
+
+
 
 
 
