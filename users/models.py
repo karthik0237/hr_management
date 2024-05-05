@@ -69,7 +69,7 @@ class BloodGroupChoice(Enum):
 # Create your models here.
 class BaseUserModel(models.Model):
 
-    created_at = models.DateTimeField(auto_now_add = True)
+    created_at = models.DateTimeField(auto_now_add = True, blank = True)
     updated_at = models.DateTimeField(auto_now = True)
     is_active = models.BooleanField(default  = True)
 
@@ -110,29 +110,29 @@ class City(BaseUserModel):
     longitude = models.CharField(max_length = 32, null = True)
 
 
-class User(AbstractUser):
+class User(BaseUserModel, AbstractUser):
 
     name = models.CharField(null = False, max_length = 32)
     # username
     # password
     designation = models.CharField(choices =  DesignationChoice.choices, max_length = 32, db_index = True)
     employee_id = models.CharField(max_length = 16, null = False,unique = True,db_index = True)
-    department = models.ForeignKey(Department,on_delete = models.PROTECT)
+    department = models.ForeignKey(Department, on_delete = models.PROTECT, null = True)
     # date_joined
     picture = models.ImageField(upload_to = "profile", null = True)
     # mobile no validation required
     mobile = models.CharField(max_length = 16, null = False, unique = True)
     # email validation required
-    email = models.EmailField(unique = True, null = False, db_index = True)
+    email = models.CharField(max_length = 60, unique = True, null = False, db_index = True)
     dob = models.DateField(null = True)
 
     door_no = models.CharField(max_length = 32)
     street = models.CharField(max_length = 64)
     locality = models.CharField(max_length = 32)
-    city = models.ForeignKey(City, on_delete = models.PROTECT)
+    city = models.ForeignKey(City, on_delete = models.PROTECT, null = True)
 
     gender = models.CharField(choices = GenderChoice.choices, max_length = 12, null = False)
-    reporting_to = models.ForeignKey('self',on_delete = models.PROTECT)
+    #reporting_to = models.ForeignKey('self', on_delete = models.PROTECT)
     passport_no = models.CharField(max_length = 16, null = True, unique = True)
     nationality = models.CharField(max_length = 32,null = True)
 

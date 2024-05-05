@@ -1,7 +1,7 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, ValidationError
 
 from users import models
-
+from users.utils import is_valid_email, is_valid_string
 
 
 
@@ -79,6 +79,21 @@ class UserSerializer(BaseUserSerializer):
     class Meta:
         model = models.User
         fields = '__all__'
+
+
+    def validate(self, attrs):
+
+        is_update = bool(self.instance)
+
+        email = attrs.get('email')
+        valid_email = is_valid_email(email)
+        if valid_email == False:
+            raise ValidationError(detail = 'please enter valid email')
+
+        return super().validate(attrs)
+    
+   
+
 
 
 class UserBankdetailsSerializer(BaseUserSerializer):

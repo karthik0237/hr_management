@@ -24,4 +24,4 @@ urlpatterns = [
 ]
 
 
-urlpatterns += userrouter
+urlpatterns += userrouter.urls
