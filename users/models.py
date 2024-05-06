@@ -34,7 +34,7 @@ class GenderChoice(Enum):
     
 class MaritalStatusChoice(Enum):
 
-    SINGLE = 'Single'
+    UMMARRIED = 'Unmarried'
     MARRIED = 'Married'
     DIVORCED = 'Divorced'
 
@@ -45,14 +45,14 @@ class MaritalStatusChoice(Enum):
 
 class BloodGroupChoice(Enum):
 
-    O_POSITIVE = 'O Positive(O+)'
-    A_POSITIVE = 'A Positive(A+)'
-    B_POSITIVE = 'B Positive(O+)'
-    AB_POSITIVE = 'AB Positive(AB+)'
-    O_NEGATIVE = 'O Negative(O-)'
-    A_NEGATIVE = 'A Negative(A-)'
-    B_NEGATIVE = 'B Negative(B-)'
-    AB_NEGATIVE = 'AB Negative(AB-)'
+    O_POSITIVE = 'O+'
+    A_POSITIVE = 'A+'
+    B_POSITIVE = 'B+'
+    AB_POSITIVE = 'AB+'
+    O_NEGATIVE = 'O-'
+    A_NEGATIVE = 'A-'
+    B_NEGATIVE = 'B-'
+    AB_NEGATIVE = 'AB-'
 
 
     # class method, accessed using class instance cls
@@ -124,6 +124,7 @@ class User(BaseUserModel, AbstractUser):
     mobile = models.CharField(max_length = 16, null = False, unique = True)
     # email validation required
     email = models.CharField(max_length = 60, unique = True, null = False, db_index = True)
+    #dob validation required
     dob = models.DateField(null = True)
 
     door_no = models.CharField(max_length = 32)
@@ -132,7 +133,7 @@ class User(BaseUserModel, AbstractUser):
     city = models.ForeignKey(City, on_delete = models.PROTECT, null = True)
 
     gender = models.CharField(choices = GenderChoice.choices, max_length = 12, null = False)
-    #reporting_to = models.ForeignKey('self', on_delete = models.PROTECT)
+    reporting_to = models.ForeignKey('self', on_delete = models.PROTECT, null = True)
     passport_no = models.CharField(max_length = 16, null = True, unique = True)
     nationality = models.CharField(max_length = 32,null = True)
 
@@ -151,9 +152,13 @@ class UserBankdetails(BaseUserModel):
     
     id  = models.UUIDField(primary_key = True, editable = False, default =  uuid.uuid4())
     user = models.ForeignKey(User, on_delete = models.PROTECT, null  = False, db_index = True)
+    # validation required
     bank_name = models.CharField(max_length = 32, null = False)
-    ifsc = models.CharField(max_length = 16,null = False)
+    bankaccount_no = models.CharField(max_length = 40, null = False, unique = True)
+    # validation required alphanumeric
+    ifsc = models.CharField(max_length = 16, null = True)
     base_branch = models.CharField(max_length = 32,null = True)
+    # validation required
     pan_card = models.CharField(max_length = 16, null = True)
     is_company_issued = models.BooleanField(default = False, db_index = True)
 
@@ -164,9 +169,13 @@ class FamilyMembers(BaseUserModel):
     id  = models.UUIDField(primary_key = True, editable = False, default =  uuid.uuid4())
     user = models.ForeignKey(User, on_delete = models.PROTECT, db_index = True)
     name = models.CharField(max_length = 32, null = False)
+
     relationship = models.CharField(max_length = 32, null = True, default = None)
+    #validation required
     mobile = models.CharField(max_length = 12, null = False)
+    # validation required 
     email = models.EmailField(null = True)
+    # validation required
     dob = models.DateTimeField(null = True)
     is_emergency_contact = models.BooleanField(default = True)
 
@@ -175,9 +184,11 @@ class EducationDetails(BaseUserModel):
 
     id  = models.UUIDField(primary_key = True, editable = False, default =  uuid.uuid4())
     user = models.ForeignKey(User, on_delete = models.PROTECT,db_index = True)
+    # validation required 'start date < end date
     start_date = models.DateField(null = False)
     end_date = models.DateField(null = True)
     institute_name = models.CharField(max_length = 128, default = None)
+    # validation required numericals only
     percentage = models.FloatField(null = False)
     course = models.CharField(max_length = 64, null = False)
     level = models.CharField(max_length = 32, null = True, default = None)
@@ -191,6 +202,7 @@ class UserExperience(BaseUserModel):
     user = models.ForeignKey(User, on_delete =  models.PROTECT, db_index = True)
     title = models.CharField(max_length = 64, null = False)
     place_of_work = models.CharField(max_length = 50, null = False)
+    # validation required start date < end date
     start_datetime = models.DateField(default =  None, db_index = True)
     end_datetime = models.DateField(null = False, db_index = True)
     skills = models.CharField(max_length = 512, null = True)
@@ -206,7 +218,7 @@ class UserGroup(BaseUserModel):
 
     def save(self,*args,**kwargs):
 
-       # get or create group with name, returns tuple(Group_object,true/false)
+       # get or create group with name, returns tuple(Group_object,boolean true/false)
         group, created = Group.objects.get_or_create(name = self.name)
         return super().save(*args,**kwargs)
     

@@ -78,17 +78,25 @@ class UserSerializer(BaseUserSerializer):
     
     class Meta:
         model = models.User
-        fields = '__all__'
+        fields = BaseUserSerializer.Meta.fields +  ['name','username','password','employee_id',\
+                                                    'designation','picture','date_joined','department',\
+                                                    'mobile','email','dob','door_no','street','locality',\
+                                                    'city','gender','reporting_to','passport_no',\
+                                                    'nationality','marital_status','no_of_children',\
+                                                    'blood_group','groups','social_id_no','user_permissions']
 
 
     def validate(self, attrs):
 
         is_update = bool(self.instance)
 
+        # email validation
         email = attrs.get('email')
         valid_email = is_valid_email(email)
         if valid_email == False:
             raise ValidationError(detail = 'please enter valid email')
+        
+        
 
         return super().validate(attrs)
     
