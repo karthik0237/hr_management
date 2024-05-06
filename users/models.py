@@ -22,6 +22,7 @@ class DesignationChoice(Enum):
         return tuple((i.name, i.value) for i in cls)
     
 
+
 class GenderChoice(Enum):
 
     MALE = 'Male'
@@ -31,6 +32,8 @@ class GenderChoice(Enum):
     @classmethod
     def choices(cls):
         return tuple((i.name, i.value) for i in cls)
+    
+
     
 class MaritalStatusChoice(Enum):
 
@@ -121,7 +124,7 @@ class User(BaseUserModel, AbstractUser):
     # date_joined
     picture = models.ImageField(upload_to = "profile", null = True)
     # mobile no validation required
-    mobile = models.CharField(max_length = 16, null = False, unique = True)
+    mobile = models.CharField(max_length = 24, null = False, unique = True)
     # email validation required
     email = models.CharField(max_length = 60, unique = True, null = False, db_index = True)
     #dob validation required
@@ -152,10 +155,10 @@ class UserBankdetails(BaseUserModel):
     
     id  = models.UUIDField(primary_key = True, editable = False, default =  uuid.uuid4())
     user = models.ForeignKey(User, on_delete = models.PROTECT, null  = False, db_index = True)
-    # validation required
     bank_name = models.CharField(max_length = 32, null = False)
+    #validation required
     bankaccount_no = models.CharField(max_length = 40, null = False, unique = True)
-    # validation required alphanumeric
+    # validation required indian banks ifsc format
     ifsc = models.CharField(max_length = 16, null = True)
     base_branch = models.CharField(max_length = 32,null = True)
     # validation required
@@ -169,13 +172,12 @@ class FamilyMembers(BaseUserModel):
     id  = models.UUIDField(primary_key = True, editable = False, default =  uuid.uuid4())
     user = models.ForeignKey(User, on_delete = models.PROTECT, db_index = True)
     name = models.CharField(max_length = 32, null = False)
-
+    # validation - valid string only 
     relationship = models.CharField(max_length = 32, null = True, default = None)
     #validation required
     mobile = models.CharField(max_length = 12, null = False)
     # validation required 
     email = models.EmailField(null = True)
-    # validation required
     dob = models.DateTimeField(null = True)
     is_emergency_contact = models.BooleanField(default = True)
 
@@ -188,7 +190,7 @@ class EducationDetails(BaseUserModel):
     start_date = models.DateField(null = False)
     end_date = models.DateField(null = True)
     institute_name = models.CharField(max_length = 128, default = None)
-    # validation required numericals only
+    # validation required for % between 0.0 and 100.0 only
     percentage = models.FloatField(null = False)
     course = models.CharField(max_length = 64, null = False)
     level = models.CharField(max_length = 32, null = True, default = None)
