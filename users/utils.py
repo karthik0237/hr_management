@@ -3,7 +3,7 @@ import users.serializers
 
 
 def is_valid_string(string):
-   valid = re.fullmatch(r'^([A-Za-z]{2,16} {0,1})+$', string)
+   valid = re.fullmatch(r'^([A-Za-z]{2,16} {0,})+$', string)
 
    if valid == None:
       return False
