@@ -3,7 +3,11 @@ import users.serializers
 
 
 def is_valid_string(string):
-   pass
+   valid = re.fullmatch(r'^([A-Za-z]{2,16} {0,1})+$', string)
+
+   if valid == None:
+      return False
+   return True
     
 
 
@@ -31,7 +35,7 @@ def is_valid_mobile(string):
 
 def is_valid_ifsc(string):
     
-    # r'' indicates raw string - treats \ as lietral, not as escape character
+    # r'' indicates raw string - treats '\' as lietral, not as escape character
 
    valid = re.fullmatch(r'^[A-Z]{4}0[0-9]{6}$', string)
 

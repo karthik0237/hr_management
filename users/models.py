@@ -8,7 +8,6 @@ from django.contrib.auth.models import AbstractUser,Group
 
 
 
-
 class DesignationChoice(Enum):
 
     INTERN = 'Intern'
@@ -138,7 +137,7 @@ class User(BaseUserModel, AbstractUser):
     gender = models.CharField(choices = GenderChoice.choices, max_length = 12, null = False)
     reporting_to = models.ForeignKey('self', on_delete = models.PROTECT, null = True)
     passport_no = models.CharField(max_length = 16, null = True, unique = True)
-    nationality = models.CharField(max_length = 32,null = True)
+    nationality = models.CharField(max_length = 32,null = False)
 
     marital_status = models.CharField(choices =  MaritalStatusChoice.choices, max_length = 16, null = True)
     no_of_children = models.IntegerField(null = True)
@@ -205,8 +204,8 @@ class UserExperience(BaseUserModel):
     title = models.CharField(max_length = 64, null = False)
     place_of_work = models.CharField(max_length = 50, null = False)
     # validation required start date < end date
-    start_datetime = models.DateField(default =  None, db_index = True)
-    end_datetime = models.DateField(null = False, db_index = True)
+    start_datetime = models.DateTimeField(default =  None, db_index = True)
+    end_datetime = models.DateTimeField(null = False, db_index = True)
     skills = models.CharField(max_length = 512, null = True)
     achievements = models.CharField(max_length =  512,null = True)
 

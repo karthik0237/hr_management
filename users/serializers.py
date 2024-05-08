@@ -33,8 +33,6 @@ class CountrySerializer(BaseUserSerializer):
         is_updated = bool(self.instance)
 
 
-
-
         if attrs.get('name', None):
             name = attrs.get('name')
             attrs['name_uc'] = str(name).upper()
@@ -135,9 +133,9 @@ class UserBankdetailsSerializer(BaseUserSerializer):
             raise ValidationError(detail = 'invalid PAN. Only uppercase letters and numbers allowed')
         
 
-        #bank acoount number validation
+        # bank acoount number validation
         bankaccount_no = attrs.get("bankaccount_no")
-        valid_bankaccount_no = is_valid_bankaccount_no("bankaccount_no")
+        valid_bankaccount_no = is_valid_bankaccount_no(bankaccount_no)
         if valid_bankaccount_no == False:
             raise ValidationError(detail= 'invalid')
 
@@ -153,12 +151,13 @@ class FamilyMembersSerializer(BaseUserSerializer):
         fields = '__all__'
 
     def validate(self, attrs):
+        is_update = bool(self.instance)
 
         # relationship validation
         relationship = attrs.get('relationship')
         valid_string = is_valid_string(relationship)
         if valid_string == False:
-            raise ValidationError(detail = 'invalid format. Only letters are allowed')
+            raise ValidationError(detail = 'invalid input')
         
         # email validation
         email = attrs.get('email')
@@ -184,6 +183,22 @@ class EducationDetailsSerializer(BaseUserSerializer):
 
 
     def validate(self, attrs):
+
+        is_update = bool(self.instance)
+
+        # startdate and enddate comparision
+        start_date = attrs.get("start_date")
+        end_date = attrs.get("end_date")
+
+        if end_date < start_date:
+            raise ValidationError(detail = "start date must be less than end date")
+
+        # percentage validation
+        percentage = attrs.get("percentage")
+        if percentage < 0.0 or percentage > 100.0:
+            raise ValidationError(detail = "percentage should be between 0.0 and 100.0")
+
+
         return super().validate(attrs)
 
 class UserExperienceSerializer(BaseUserSerializer):
@@ -191,6 +206,23 @@ class UserExperienceSerializer(BaseUserSerializer):
     class Meta:
         model = models.UserExperience
         fields = '__all__'
+
+    def validate(self, attrs):
+
+        is_update = bool(self.instance)
+
+        # start and end datetime validation
+        start_datetime = attrs.get("start_datetime")
+        end_datetime = attrs.get("end_datetime")
+        if end_datetime < start_datetime :
+            raise ValidationError(detail = "start date must be less than end date")
+
+
+
+
+
+
+        return super().validate(attrs)
 
 
 class UserGroupSerializer(BaseUserSerializer):
