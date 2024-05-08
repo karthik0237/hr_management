@@ -172,7 +172,7 @@ class FamilyMembers(BaseUserModel):
     user = models.ForeignKey(User, on_delete = models.PROTECT, db_index = True)
     name = models.CharField(max_length = 32, null = False)
     # validation - valid string only 
-    relationship = models.CharField(max_length = 32, null = True, default = None)
+    relationship = models.CharField(max_length = 32, null = True)
     #validation required
     mobile = models.CharField(max_length = 12, null = False)
     # validation required 
